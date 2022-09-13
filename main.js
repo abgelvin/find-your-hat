@@ -6,11 +6,102 @@ const fieldCharacter = '░';
 const pathCharacter = '*';
 
 class Field {
-    constructor(field) {
+    constructor(field = [[]]) {
         this.field = field
+        this.locationX = 0
+        this.locationY = 0
+        this.field[0][0] = pathCharacter
     }
-    print(field) {
-        string = toString(field)
-        console.log(string)
+    print() {
+        const displayString = this.field.map(row => {
+            return row.join('')
+        }).join('\n')
+        console.log(displayString)
+    }
+    isHat() {
+        return this.field[this.locationY][this.locationX] === hat
+    }
+    isHole() {
+        return this.field[this.locationY][this.locationX] === hole
+    }
+    isInBounds() {
+        return (
+            this.locationX >= 0 &&
+            this.locationY >= 0 &&
+            this.locationX < this.field[0].length &&
+            this.locationY < this.field.length
+        )
+    }
+    static generateField(height, width, percentage = 0.1) {
+        const field = new Array(height).fill(0).map(el => new Array(width))
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const prob = Math.random()
+                field[y][x] = prob > percentage ? fieldCharacter : hole
+            }
+        }
+        //set hat location
+        const hatLocation = {
+            x: Math.floor(Math.random() * width),
+            y: Math.floor(Math.random() * height)
+        }
+        //make sure hat is not at starting point
+        while (hatLocation.x === 0 && hatLocation.x == 0) {
+            hatLocation.x = Math.floor(Math.random() * width)
+            hatLocation.y = Math.floor(Math.random() * height)
+        }
+        field[hatLocation.y][hatLocation.x] = hat
+        return field
+    }
+    //get user input
+    askQuestion() {
+        const answer = prompt('Which way do you want to move?').toUpperCase()
+        switch (answer) {
+            case 'U':
+                this.locationY -= 1
+                break
+            case 'D':
+                this.locationY += 1
+                break
+            case 'L':
+                this.locationX -= 1
+                break
+            case 'R':
+                this.locationX += 1
+                break
+            default:
+                console.log('Enter U, D, L, or R.')
+                this.askQuestion()
+                break
+        }
+    }
+    runGame() {
+        let playing = true
+        while (playing) {
+            this.print()
+            this.askQuestion()
+            if (!this.isInBounds()) {
+                console.log('Out of bounds direction!')
+                playing = false
+                break
+            } else if (this.isHole) {
+                console.log('Sorry, you fell in a hole!')
+                playing = false
+                break
+            } else if (this.isHat()) {
+                console.log('Congrats! You found your hat!')
+                playing = false
+                break
+            }
+            this.field[this.locationY][this.locationX] = pathCharacter
+        }
     }
 }
+
+const myField = new Field([
+    ['*', '░', 'O', '░'],
+    ['░', '░', '░', 'O'],
+    ['░', 'O', '░', '^']
+    ['O', '░', 'O', '░']
+])
+
