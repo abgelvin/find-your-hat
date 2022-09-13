@@ -84,7 +84,7 @@ class Field {
                 console.log('Out of bounds direction!')
                 playing = false
                 break
-            } else if (this.isHole) {
+            } else if (this.isHole()) {
                 console.log('Sorry, you fell in a hole!')
                 playing = false
                 break
@@ -98,10 +98,5 @@ class Field {
     }
 }
 
-const myField = new Field([
-    ['*', '░', 'O', '░'],
-    ['░', '░', '░', 'O'],
-    ['░', 'O', '░', '^']
-    ['O', '░', 'O', '░']
-])
-
+const myField = new Field(Field.generateField(10, 10, .3))
+myField.runGame()
